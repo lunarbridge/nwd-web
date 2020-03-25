@@ -1,0 +1,1 @@
+export { ImageTableRowDetail } from "./image-table-row-detail";
