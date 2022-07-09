@@ -1,14 +1,26 @@
 const Pool = require("pg").Pool;
 
+const constants = require('../constants');
+
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_DATABASE } = process.env;
+console.log("DB environments", "\nDB_USER: ", DB_USER, "\nDB_PASSWORD: ", DB_PASSWORD, "\nDB_HOST", DB_HOST, "\nDB_PORT", DB_PORT, "\nDB_DATABASE", DB_DATABASE);
 
 const pool = new Pool({
   user: DB_USER,
   password: DB_PASSWORD,
-  hots: DB_HOST,
+  host: DB_HOST,
   port: DB_PORT,
-  database: DB_DATABASE
+  database: DB_DATABASE,
+  connectionTimeoutMillis: 5000,
 });
+
+pool.connect((err, client, release) => {
+    if (err) {
+        return console.error("DB connection failed:\n", err.stack);
+    } else {
+        console.log("Connected to DB successfully");
+    }
+})
 
 const imageInformation = async({ imageInstanceIds }) => {
   // TODO: add preview URL
@@ -123,7 +135,9 @@ const processStatus = async({ projectId }) => {
 
   const params = [constants.PREDICTION_SOFTWARE_NAME, projectId];
   
-  return pool.query(query, params);
+//   return pool.query(query, params);
+  const res = await pool.query(query, params);
+  return res;
 }
 
 const latestPredictionSoftware = async() => {
@@ -138,8 +152,10 @@ const latestPredictionSoftware = async() => {
   `
 
   const params = [constants.PREDICTION_SOFTWARE_NAME];
+  const res = await pool.query(query, params);
 
-  return pool.query(query, params);
+  return res;
+//   return pool.query(query, params);
 }
 
 const softwareParameters = async(softwareId) => {

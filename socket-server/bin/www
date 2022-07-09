@@ -3,6 +3,8 @@
 /**
  * Module dependencies.
  */
+// require('dotenv').config();
+require('dotenv').config();
 
 const app = require('../app');
 const segServer = require('../seg-server');
