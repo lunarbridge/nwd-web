@@ -1,20 +1,24 @@
 import axios from "axios";
-
+import { Cytomine } from "cytomine-client";
 import { cytomineCurrentTime, requestAPI } from "../util"
+import { fetchCurrentUser } from "../util";
 
 export const annotation = async({ jobUserId, imageInstanceId, imageWidth, imageHeight }) => {
   const bbox = `0,0,${imageWidth},${imageHeight}`;
+  const params = {
+    user: jobUserId,
+    notReviewedOnly: false,
+    image: imageInstanceId,
+    showWKT: true,
+    showTerm: true,
+    kmeans: false,
+    bbox: bbox
+  };
 
-  return requestAPI({
-    url: "/annotation.json?user=" + jobUserId
-      + "&notReviewedOnly=false"
-      + "&image=" + imageInstanceId
-      + "&showWKT=true"
-      + "&showTerm=true"
-      + "&kmeans=true"
-      + "bbox=" + bbox,
-    method: "GET"
-  });
+
+  const { data } = await Cytomine.instance.api.get('annotation.json', {params});
+  
+  return data; 
 }
 
 export const upload = async({ projectId, storageId, uploadFiles, signature, setUploadProgress }) => {
@@ -31,7 +35,7 @@ export const upload = async({ projectId, storageId, uploadFiles, signature, setU
     + "&idStorage=" + storageId
     + "&cytomine=" + process.env.REACT_APP_REMOTE_SERVER;
 
-  return axios.request({
+  const requestRes = await axios.request({
     url: url,
     method: "POST",
     data: formData,
@@ -44,8 +48,13 @@ export const upload = async({ projectId, storageId, uploadFiles, signature, setU
     },
     onUploadProgress: (progress) => {
       setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
-    }
+    },
+    withCredentials: false,
   });
+
+  const { uploadedFile } = requestRes.data[0];
+
+  return uploadedFile.id;
 }
 
 export const uploadSignature = async({ projectId, storageId }) => {
@@ -54,18 +63,24 @@ export const uploadSignature = async({ projectId, storageId }) => {
   const queryString = "idProject=" + projectId + "&idStorage=" + storageId 
     + "&cytomine=" + process.env.REACT_APP_REMOTE_SERVER; 
   const date = cytomineCurrentTime();
+  const { publicKey } = fetchCurrentUser();
 
-  const response = await requestAPI({
-    url: "/signature.json?date=" + encodeURIComponent(date) 
-      + "&forwardURI=" + forwardURI
-      + "&method=" + method
-      + "&queryString=" + encodeURIComponent(queryString), 
-    headers: new Headers({
-      "X-Requested-With": "XMLHttpRequest"
-    })
+  const uploadSignature = await Cytomine.instance.fetchSignature({
+    method: "POST",
+    uri: forwardURI,
+    queryString: queryString,
+    date: date,
+    contentMD5: null,
+    contentType: null,
   });
 
-  return Object.assign(response, { dateFull: date });
+  const signature = {
+    publicKey: publicKey,
+    signature: uploadSignature,
+    dateFull: date
+  }
+
+  return signature;
 }
 
 export const stopPrediction = async({ jobId }) => {
