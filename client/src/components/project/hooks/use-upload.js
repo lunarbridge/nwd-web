@@ -20,45 +20,82 @@ export const useUpload = ({ projectId }) => {
   const [uploadedStatus, setUploadedStatus] = useState(uploadedFileStatus[0]);
   const socket = useContext(SocketContext);
 
-  const _checkDeploy = (uploadedId, interval=1000) => {
-    const check = async() => {
-      const uploadedFile = await UploadedFile.fetch(uploadedId);
-      const status = uploadedFileStatus[uploadedFile.status];
-
-      switch (status) {
-        case "UPLOADED":
-        case "TO_DEPLOY":
-        case "TO_CONVERT":
-          setUploadedStatus({
-            result: "processing",
-            status: status
-          });
-          setTimeout(check, interval);
-          break;
-        case "CONVERTED":
-        case "DEPLOYED":
-          setUploadedStatus({
-            result: "success",
-            status: status
-          });
-          socket.emit("fetchData");
-          break;
-        case "ERROR_FORMAT":
-        case "ERROR_CONVERSION":
-        case "UNCOMPRESSED":
-        case "ERROR_DEPLOYMENT":
-          setUploadedStatus({
-            result: "error",
-            status: status
-          });
-          break;
-        default:
-      }
+  const _checkDeploy = (uploadedId, interval=500) => {
+    const exitCheck = (checkerId) => {
+      console.log('exit check')
+      
+      clearInterval(checkerId);
+      setTimeout(() => setIsUploading(false), 5000);
     }
 
     setAction("checkDeploy");
-    check();
 
+    let checker = setInterval(async() => {
+      const { status, statusText } = await UploadedFile.fetch(uploadedId);
+
+      setUploadProgress(status);
+      setUploadedStatus(statusText);
+
+      switch (statusText) {
+        case "UPLOADED":
+          setUploadedStatus({
+            result: "uploaded file",
+            status: statusText
+          });
+        case "TO_DEPLOY":
+          setUploadedStatus({
+            result: "Deploy scheduled...",
+            status: statusText
+          });
+        case "TO_CONVERT":
+          setUploadedStatus({
+            result: "Processing image...",
+            status: statusText
+          });
+          exitCheck(checker);
+          break;
+        case "CONVERTED":
+          setUploadedStatus({
+            result: "Converted image",
+            status: statusText
+          });
+        case "DEPLOYED":
+          setUploadedStatus({
+            result: "Successfully deployed image",
+            status: statusText
+          });
+          exitCheck(checker);
+          socket.emit("fetchData");
+          break;
+        case "ERROR_FORMAT":
+          setUploadedStatus({
+            result: "Upload file format is not supported",
+            status: statusText
+          });
+          exitCheck();
+        case "ERROR_CONVERSION":
+          setUploadedStatus({
+            result: "Failed to convert image",
+            status: statusText
+          });
+          exitCheck(checker);
+        case "UNCOMPRESSED":
+          setUploadedStatus({
+            result: "Uncomporessed",
+            status: statusText
+          });
+          exitCheck(checker);
+        case "ERROR_DEPLOYMENT":
+          setUploadedStatus({
+            result: "Failed to deploy image",
+            status: statusText
+          });
+          exitCheck(checker);
+          break;
+        default:
+        }
+
+    }, interval);
   }
 
   const handleUpload = async(event) => {
@@ -73,7 +110,7 @@ export const useUpload = ({ projectId }) => {
       setAction("upload");
       setIsUploading(true);
 
-      const uploaded = await uploadRequest({
+      const uploadedFileId = await uploadRequest({
         projectId: projectId,
         storageId: storageId,
         uploadFiles: uploadFiles,
@@ -81,9 +118,7 @@ export const useUpload = ({ projectId }) => {
         setUploadProgress: setUploadProgress
       });
 
-      const uploadedId = uploaded.data[0].uploadFile.id;
-
-      _checkDeploy(uploadedId);      
+      _checkDeploy(uploadedFileId);   
     } 
   }
 
