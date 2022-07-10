@@ -6,12 +6,13 @@
     "@material-ui/core": "^4.6.0",
     "@material-ui/icons": "^4.5.1",
     "axios": "^0.19.0",
-    "cytomine-client": "^1.2.0",
-    "ol": "^6.1.0",
+    "cytomine-client": "^1.11.0",
+    "ol": "^6.14.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.3.0",
+    "serve": "^13.0.4",
     "socket.io-client": "^2.3.0"
   },
   "scripts": {
