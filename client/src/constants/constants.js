@@ -24,6 +24,8 @@ export const processStatus = {
 }
 
 export const zoomifyBaseUrl = process.env.REACT_APP_IMAGE_SERVER 
-  + "/image/tile?zoomify=";
+  + "/slice/tile?fif=";
+// export const zoomifyBaseUrl = process.env.REACT_APP_IMAGE_SERVER 
+//   + "/image/tile?zoomify=";
 
-export const zoomifyUrlParam = "/&tileGroup={TileGroup}&z={z}&x={x}&y={y}&mimeType=openslide/svs";
+// export const zoomifyUrlParam = "&tileGroup={TileGroup}&z={z}&x={x}&y={y}&mimeType=openslide/svs";

@@ -1,1 +1,1 @@
-export { uploadedFileStatus, processStatus, zoomifyBaseUrl, zoomifyUrlParam } from "./constants";
+export { uploadedFileStatus, processStatus, zoomifyBaseUrl } from "./constants";
