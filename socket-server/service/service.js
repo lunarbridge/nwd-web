@@ -3,6 +3,7 @@ const constants = require("../constants");
 
 const fetchSoftware = async() => {
   let latestSoftware = await model.latestPredictionSoftware();
+  // TODO: handle cases; number of software is zero
   latestSoftware = latestSoftware.rows[0];
   const parameters = await model.softwareParameters(latestSoftware.id);
 
