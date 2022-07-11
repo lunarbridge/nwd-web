@@ -16,7 +16,10 @@ const pool = new Pool({
 
 pool.connect((err, client, release) => {
     if (err) {
-        return console.error("DB connection failed:\n", err.stack);
+        // return console.error("DB connection failed:\n", err.stack);
+        console.error("DB connection failed:\n", err.stack);
+
+        process.exit(1);
     } else {
         console.log("Connected to DB successfully");
     }
