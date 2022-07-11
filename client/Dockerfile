@@ -7,11 +7,10 @@ WORKDIR $APP_DIR
 
 COPY package* $APP_DIR/
 RUN npm install
+RUN npm install -g serve
 
 COPY . .
-
 RUN npm run build:dev
-RUN npm install -g serve
 
 ENV EXPOSE_PORT=5000
 ENV NODE_ENV=dev
