@@ -1,4 +1,6 @@
 # Slide segmentation web service
+![dashboard](./assets/dashboard.png)
+
 This serivce provides management of the slides and check segmented results based on [Cytomine](https://github.com/cytomine-uliege)
 
 ## Requirements
@@ -15,3 +17,16 @@ This serivce provides management of the slides and check segmented results based
         * e.g. set Cytomine's core url to `REACT_APP_REMOTE_SERVER`
     * Build docker image in the each of `./client` and `./socket-server` directory
     * **(Optional)** if Cytomine's service environments are changed, modify `.env` and build docker image again
+
+## Demo
+### Viewer
+![viewer](./assets/demo-viewer.png)
+
+### File upload
+![file-upload](./assets/demo-upload.gif)
+
+### Predict slide
+![file-upload](./assets/demo-predict.gif)
+
+### Sync updates
+![real-time](./assets/demo-realtime.gif)
