@@ -23,10 +23,10 @@ This serivce provides management of the slides and check segmented results based
 ![viewer](./assets/demo-viewer.png)
 
 ### File upload
-<img src="./assets/demo-upload.gif" alt="file-upload" height="480" />
+<img src="./assets/demo-upload.gif" alt="file-upload" width="480" />
 
 ### Predict slide
-<img src="./assets/demo-predict.gif" alt="predict-slide" height="480" />
+<img src="./assets/demo-predict.gif" alt="predict-slide" width="480" />
 
 ### Sync updates
-<img src="./assets/demo-realtime.gif" alt="real-time" height="480" />
+<img src="./assets/demo-realtime.gif" alt="real-time" />
